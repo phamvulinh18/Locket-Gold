@@ -142,7 +142,7 @@ export default function AccountPage({ darkMode, user, setUser }) {
       <div className="flex items-center justify-center min-h-full py-10 px-4">
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-md p-8 rounded-[2.5rem] text-center shadow-xl" style={{ background: cardBg }}>
           <div className="w-24 h-24 mx-auto rounded-3xl overflow-hidden mb-6 border-4 border-yellow-400/20">
-             <img src={`https://ui-avatars.com/api/?name=${user.username}&background=F0E000&color=000&size=128&bold=true`} alt="Avatar" />
+             <img src={`/img/users/avatar-default copy.jpg`} alt="Avatar" />
           </div>
           <h2 className="text-2xl font-black mb-1" style={{ color: darkMode ? '#fff' : '#111' }}>{user.username}</h2>
           <p className="text-sm mb-8" style={{ color: darkMode ? '#A1A1AA' : '#71717A' }}>{user.email}</p>
@@ -175,9 +175,13 @@ export default function AccountPage({ darkMode, user, setUser }) {
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
         <div className="text-center mb-6">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-yellow-300 to-amber-500 flex items-center justify-center shadow-lg shadow-yellow-500/30 mb-3">
-            <span className="text-2xl">🔒</span>
-          </div>
+          <motion.div 
+            animate={{ rotateY: [0, 360] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+            className="w-16 h-16 mx-auto rounded-2xl overflow-hidden mb-3"
+          >
+            <img src="/logo-locket.png" alt="Logo" className="w-full h-full object-cover" />
+          </motion.div>
           <h1 className="text-2xl font-black" style={{ color: darkMode ? '#fff' : '#111' }}>Locket<span className="text-yellow-500">Gold</span></h1>
         </div>
 

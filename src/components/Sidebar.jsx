@@ -62,15 +62,18 @@ function SidebarContent({ activeMenu, onSelect, darkMode, user, onLogout }) {
 
   return (
     <>
-      {/* Logo */}
       <motion.div
         initial={{ opacity: 0, y: -16 }}
         animate={{ opacity: 1, y: 0 }}
         className="flex items-center gap-2.5 px-2 pt-3 pb-5"
       >
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-yellow-300 to-amber-500 flex items-center justify-center shadow-md">
-          <span className="text-lg">🔒</span>
-        </div>
+        <motion.div 
+          animate={{ rotateY: [0, 360] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+          className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center"
+        >
+          <img src="/logo-locket.png" alt="LocketGold Logo" className="w-full h-full object-cover" />
+        </motion.div>
         <div>
           <p className="font-extrabold text-gray-900 dark:text-white text-base leading-tight">
             Locket<span className="text-yellow-500">Gold</span>
@@ -106,12 +109,19 @@ function SidebarContent({ activeMenu, onSelect, darkMode, user, onLogout }) {
       >
         <div className="flex items-center gap-3 min-w-0">
           <div className="relative shrink-0">
+            {/* Avatar chính */}
             <img
-              src={user ? `https://ui-avatars.com/api/?name=${user.username}&background=F0E000&color=000` : "https://i.pravatar.cc/150?u=locketgold"}
+              src={user ? `https://ui-avatars.com/api/?name=${user.username}&background=F0E000&color=000` : "/img/users/avatar-default copy.jpg"}
               alt="User"
-              className="w-10 h-10 rounded-xl object-cover"
+              className="w-10 h-10 rounded-xl object-cover relative z-0"
             />
-            <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 border-2 border-white dark:border-[#252545] rounded-full ${user ? 'bg-green-400' : 'bg-gray-400'}`}></span>
+            {/* Khung Premium trang trí */}
+            <img 
+              src="/img/icon/khung/premium.webp" 
+              className="absolute -inset-1.5 w-[calc(100%+0.75rem)] h-[calc(100%+0.75rem)] max-w-none z-10 pointer-events-none" 
+              alt="Frame" 
+            />
+            <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 border-2 border-white dark:border-[#252545] rounded-full z-20 ${user ? 'bg-green-400' : 'bg-gray-400'}`}></span>
           </div>
           <div className="min-w-0">
             <p className="font-bold text-sm text-gray-900 dark:text-white truncate">

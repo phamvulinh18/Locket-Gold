@@ -64,11 +64,18 @@ export default function Navbar({ darkMode, setDarkMode, setSidebarOpen, user }) 
         <div className="flex items-center gap-2.5 pl-2 ml-1 border-l"
           style={{ borderColor: darkMode ? 'rgba(255,255,255,0.1)' : '#e5e7eb' }}
         >
-          <img
-            src={user ? `https://ui-avatars.com/api/?name=${user.full_name}&background=F0E000&color=000` : "https://i.pravatar.cc/150?u=locketgold"}
-            alt="User"
-            className="w-8 h-8 rounded-lg object-cover"
-          />
+          <div className="relative">
+            <img
+              src={user ? `https://ui-avatars.com/api/?name=${user.full_name}&background=F0E000&color=000` : "/img/users/avatar-default copy.jpg"}
+              alt="User"
+              className="w-8 h-8 rounded-lg object-cover relative z-0"
+            />
+            <img 
+              src="/img/icon/khung/premium.webp" 
+              className="absolute -inset-1 w-[calc(100%+0.5rem)] h-[calc(100%+0.5rem)] max-w-none z-10 pointer-events-none" 
+              alt="Frame" 
+            />
+          </div>
           <div className="hidden md:block">
             <p className="text-sm font-bold leading-none"
               style={{ color: darkMode ? '#fff' : '#111827' }}>{user ? user.full_name : 'Guest'}</p>

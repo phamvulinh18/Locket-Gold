@@ -1,50 +1,70 @@
 import { motion } from 'framer-motion'
-import { RiVerifiedBadgeFill, RiFlashlightFill, RiBookmarkLine } from 'react-icons/ri'
+import { RiFlashlightFill } from 'react-icons/ri'
 import { useNavigate } from 'react-router-dom'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import { Autoplay } from 'swiper/modules'
 import { useState } from 'react'
 import PaymentModal from './PaymentModal'
 
-import 'swiper/css'
-
 const plans = [
   {
-    id: 'vip1',
-    name: 'VIP 1 Cá nhân',
-    desc: 'Kích hoạt 1 tài khoản Locket Gold. Không cần chia sẻ Password, an toàn 100%.',
-    stat1Value: '1', stat1Label: 'Tài khoản',
-    stat2Value: '1 Năm', stat2Label: 'Bảo hành',
-    stat3Value: '99k', stat3Label: 'Chi phí',
-    img: '/banner-desktop-1.jpg',
+    id: 'basic',
+    name: 'Locket Gold Basic',
+    desc: 'Up Locket Gold bằng Shadowrocket.',
+    price: '49,000',
+    priceValue: '49k',
+    icon: '/img/level/svip-1.gif', // <--- Cập nhật icon GIF
+    features: [
+      'Mở khóa Locket Gold',
+      'Không quảng cáo',
+      'Upload ảnh từ thư viện',
+      'Quay video Lockets 5s',
+      'Xem những ai đã xem Lockets của bạn',
+      'Thay đổi icon Locket',
+      'Mở khóa giới hạn bạn bè',
+      'Huy hiệu Locket Gold'
+    ],
+    recommended: false,
+    color: 'from-gray-500/20 to-gray-800/40'
   },
   {
-    id: 'vip2',
-    name: 'VIP 2 Cặp Đôi',
-    desc: 'Kích hoạt nhanh chóng 2 tài khoản độc lập. Giải pháp siêu tiết kiệm cho cặp đôi.',
-    stat1Value: '2', stat1Label: 'Tài khoản',
-    stat2Value: '1 Năm', stat2Label: 'Bảo hành',
-    stat3Value: '189k', stat3Label: 'Chi phí',
-    img: '/banner-desktop-2.jpg',
+    id: 'pro',
+    name: 'Locket Gold Pro',
+    desc: 'Up Locket Gold bằng Username Locket.',
+    price: '89,000',
+    priceValue: '89k',
+    icon: '/img/level/svip-2.gif', // <--- Cập nhật icon GIF
+    features: [
+      'Mở khóa Locket Gold',
+      'Không quảng cáo',
+      'Upload ảnh từ thư viện',
+      'Quay video Lockets 5s',
+      'Xem những ai đã xem Lockets của bạn',
+      'Thay đổi icon Locket',
+      'Mở khóa giới hạn bạn bè',
+      'Huy hiệu Locket Gold'
+    ],
+    recommended: true,
+    color: 'from-yellow-500/20 to-amber-600/40'
   },
   {
-    id: 'vip3',
-    name: 'VIP 3 Gia Đình',
-    desc: 'Kích hoạt 3 tài khoản. Sử dụng riêng tư trên 3 thiết bị iPhone khác nhau.',
-    stat1Value: '3', stat1Label: 'Tài khoản',
-    stat2Value: '1 Năm', stat2Label: 'Bảo hành',
-    stat3Value: '269k', stat3Label: 'Chi phí',
-    img: '/banner-desktop-3.jpg',
-  },
-  {
-    id: 'vip4',
-    name: 'VIP 4 Cao Cấp',
-    desc: 'Hoàn hảo cho nhóm bạn thân. Kích hoạt lên tới 5 tài khoản độc lập cực nhanh.',
-    stat1Value: '5', stat1Label: 'Tài khoản',
-    stat2Value: '1 Năm', stat2Label: 'Bảo hành',
-    stat3Value: '399k', stat3Label: 'Chi phí',
-    img: '/banner-desktop-1.jpg',
-  },
+    id: 'premium',
+    name: 'Locket Gold Premium',
+    desc: 'Up Locket Gold bằng Username Locket.',
+    price: '199,000',
+    priceValue: '199k',
+    icon: '/img/level/svip-10.gif', // <--- Cập nhật icon GIF
+    features: [
+      'Mở khóa Locket Gold',
+      'Không quảng cáo',
+      'Upload ảnh từ thư viện',
+      'Quay video Lockets 15s',
+      'Xem những ai đã xem Lockets của bạn',
+      'Thay đổi icon Locket',
+      'Mở khóa giới hạn bạn bè',
+      'Huy hiệu Locket Gold'
+    ],
+    recommended: true,
+    color: 'from-blue-500/20 to-purple-600/40'
+  }
 ]
 
 export default function PricingCards({ darkMode, user }) {
@@ -53,84 +73,100 @@ export default function PricingCards({ darkMode, user }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleBuyPlan = (plan) => {
-    // Sửa logic check đăng nhập ở đây
     if (!user) {
       alert('Vui lòng đăng nhập tài khoản để thực hiện mua gói VIP! 🎉')
       navigate('/account')
       return
     }
-
-    setSelectedPlan(plan)
+    const modalPlan = {
+       ...plan,
+       stat3Value: plan.priceValue
+    }
+    setSelectedPlan(modalPlan)
     setIsModalOpen(true)
   }
 
-  const textMain = darkMode ? '#FFFFFF' : '#111111'
-  const textSub = darkMode ? '#A1A1AA' : '#71717A'
-
   return (
-    <div className="w-full overflow-hidden">
-      <div className="flex items-center justify-between mb-5 px-1">
-        <h2 className="text-xl font-black tracking-tight" style={{ color: textMain }}>
-          Chọn gói phù hợp với nhu cầu
-        </h2>
-        <span className="text-sm font-medium" style={{ color: textSub }}>
-          Thanh toán tự động 3s
-        </span>
-      </div>
-
-      <Swiper
-        modules={[Autoplay]}
-        loop={true}
-        autoplay={{ delay: 3000, disableOnInteraction: false }}
-        slidesPerView="auto"
-        spaceBetween={20}
-        grabCursor={true}
-        className="pb-10"
-      >
+    <div className="w-full max-w-6xl mx-auto py-10 px-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {plans.map((plan, i) => (
-          <SwiperSlide key={plan.id} style={{ width: 'auto' }}>
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
-              className="p-1.5 rounded-[2rem] w-[280px] sm:w-[320px]"
-              style={{ background: darkMode ? '#252545' : '#E8E8E9' }}
-            >
-              <div className="relative w-full aspect-[3/4] sm:h-[450px] rounded-[1.75rem] overflow-hidden group">
-                <img src={plan.img} alt={plan.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  onError={(e) => { e.currentTarget.src = `https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500&q=80&sig=${i}` }} />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-[#111111]/60 to-transparent opacity-90"></div>
-                <div className="absolute bottom-0 left-0 right-0 p-5 flex flex-col justify-end h-full">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-xl font-bold text-white tracking-tight">{plan.name}</h3>
-                    <RiVerifiedBadgeFill className="text-blue-500 text-lg" />
-                  </div>
-                  <p className="text-[#a1a1aa] text-xs leading-relaxed mb-5 line-clamp-2">{plan.desc}</p>
-                  <div className="flex items-center justify-between mb-5 px-1 text-white">
-                    <div className="flex flex-col items-center">
-                      <span className="font-bold text-sm">{plan.stat1Value}</span>
-                      <span className="text-[#71717a] text-[10px]">{plan.stat1Label}</span>
-                    </div>
-                    <div className="w-[1px] h-6 bg-white/10"></div>
-                    <div className="flex flex-col items-center">
-                      <span className="font-bold text-sm">{plan.stat2Value}</span>
-                      <span className="text-[#71717a] text-[10px]">{plan.stat2Label}</span>
-                    </div>
-                    <div className="w-[1px] h-6 bg-white/10"></div>
-                    <div className="flex flex-col items-center">
-                      <span className="font-bold text-sm">{plan.stat3Value}</span>
-                      <span className="text-[#71717a] text-[10px]">{plan.stat3Label}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 mt-1">
-                    <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => handleBuyPlan(plan)}
-                      className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black py-3 rounded-2xl flex items-center justify-center gap-2 font-bold text-sm shadow-lg shadow-yellow-500/30">
-                      <RiFlashlightFill size={18} /> Mua ngay
-                    </motion.button>
-                  </div>
-                </div>
+          <motion.div
+            key={plan.id}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.15 }}
+            className={`relative p-6 rounded-[2rem] flex flex-col items-center text-center border transition-all duration-500 group ${plan.recommended ? 'scale-105 z-10' : ''}`}
+            style={{ 
+              background: darkMode 
+                ? `linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))` 
+                : `linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7))`,
+              borderColor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
+              backdropFilter: 'blur(20px)',
+              boxShadow: plan.recommended ? '0 20px 40px -10px rgba(245, 158, 11, 0.15)' : 'none'
+            }}
+          >
+            {plan.recommended && (
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-yellow-400 to-amber-600 text-black text-[9px] font-black px-3 py-1 rounded-full shadow-lg flex items-center gap-1 uppercase tracking-wider">
+                ⭐ Khuyên dùng
               </div>
-            </motion.div>
-          </SwiperSlide>
+            )}
+
+            <div className="mb-6 flex flex-col items-center">
+              <div className="w-20 h-20 mb-4 flex items-center justify-center overflow-hidden">
+                 <img src={plan.icon} alt="Level Icon" className="w-full h-full object-contain" />
+              </div>
+              <h3 className="text-xl font-black mb-1" style={{ color: darkMode ? '#fff' : '#111' }}>{plan.name}</h3>
+              <p className="text-[11px] font-medium opacity-70" style={{ color: darkMode ? '#A1A1AA' : '#71717A' }}>{plan.desc}</p>
+            </div>
+
+            <div className="mb-6">
+               <div className="flex items-baseline justify-center gap-1">
+                  <span className="text-3xl font-black" style={{ color: darkMode ? '#fff' : '#111' }}>{plan.price}đ</span>
+               </div>
+               <span className="text-[10px] font-bold text-yellow-500 uppercase tracking-tight">Vĩnh Viễn</span>
+            </div>
+
+            <div className="flex-1 w-full space-y-3.5 mb-8 text-left">
+               {plan.features.map((feature, idx) => {
+                  const isHuyHieu = feature === 'Huy hiệu Locket Gold';
+                  // Chỉ bị xám nếu là mục Huy hiệu VÀ KHÔNG PHẢI gói Premium
+                  const isGray = isHuyHieu && plan.id !== 'premium';
+                  
+                  return (
+                    <div key={idx} className="flex items-start gap-2.5">
+                       <img 
+                          src="/img/icon/verify.png" 
+                          alt="check" 
+                          className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${isGray ? 'opacity-30 grayscale' : ''}`} 
+                       />
+                       <span className="text-[12px] font-medium leading-tight" style={{ 
+                          color: isGray ? (darkMode ? '#71717A' : '#A1A1AA') : (darkMode ? '#D4D4D8' : '#3F3F46'),
+                          opacity: isGray ? 0.6 : 1
+                       }}>
+                          {feature}
+                       </span>
+                    </div>
+                  );
+               })}
+            </div>
+
+            <motion.button
+              whileHover={{ scale: 1.02, boxShadow: '0 10px 25px -5px rgba(245, 158, 11, 0.4)' }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => handleBuyPlan(plan)}
+              className="w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-2 transition-all"
+              style={{ 
+                background: plan.recommended 
+                   ? 'linear-gradient(135deg, #F59E0B, #D97706)' 
+                   : (darkMode ? 'rgba(255,255,255,0.05)' : '#111'),
+                color: plan.recommended ? '#000' : '#fff'
+              }}
+            >
+              <RiFlashlightFill size={18} /> Nâng cấp ngay
+            </motion.button>
+          </motion.div>
         ))}
-      </Swiper>
+      </div>
 
       <PaymentModal
         isOpen={isModalOpen}
