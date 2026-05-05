@@ -3,8 +3,9 @@ import { RiVerifiedBadgeFill, RiFlashlightFill, RiBookmarkLine } from 'react-ico
 import { useNavigate } from 'react-router-dom'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Autoplay } from 'swiper/modules'
+import { useState } from 'react'
+import PaymentModal from './PaymentModal'
 
-// Import Swiper styles
 import 'swiper/css'
 
 const plans = [
@@ -46,8 +47,23 @@ const plans = [
   },
 ]
 
-export default function PricingCards({ darkMode }) {
+export default function PricingCards({ darkMode, user }) {
   const navigate = useNavigate()
+  const [selectedPlan, setSelectedPlan] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleBuyPlan = (plan) => {
+    // Sửa logic check đăng nhập ở đây
+    if (!user) {
+      alert('Vui lòng đăng nhập tài khoản để thực hiện mua gói VIP! 🎉')
+      navigate('/account')
+      return
+    }
+
+    setSelectedPlan(plan)
+    setIsModalOpen(true)
+  }
+
   const textMain = darkMode ? '#FFFFFF' : '#111111'
   const textSub = darkMode ? '#A1A1AA' : '#71717A'
 
@@ -65,10 +81,7 @@ export default function PricingCards({ darkMode }) {
       <Swiper
         modules={[Autoplay]}
         loop={true}
-        autoplay={{
-          delay: 3000,
-          disableOnInteraction: false,
-        }}
+        autoplay={{ delay: 3000, disableOnInteraction: false }}
         slidesPerView="auto"
         spaceBetween={20}
         grabCursor={true}
@@ -76,91 +89,56 @@ export default function PricingCards({ darkMode }) {
       >
         {plans.map((plan, i) => (
           <SwiperSlide key={plan.id} style={{ width: 'auto' }}>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
               className="p-1.5 rounded-[2rem] w-[280px] sm:w-[320px]"
               style={{ background: darkMode ? '#252545' : '#E8E8E9' }}
             >
               <div className="relative w-full aspect-[3/4] sm:h-[450px] rounded-[1.75rem] overflow-hidden group">
-                {/* Background Image */}
-                <img 
-                  src={plan.img} 
-                  alt={plan.name} 
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  onError={(e) => {
-                    e.currentTarget.src = `https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500&q=80&sig=${i}`
-                  }}
-                />
-                
-                {/* Gradient Overlay */}
+                <img src={plan.img} alt={plan.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  onError={(e) => { e.currentTarget.src = `https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500&q=80&sig=${i}` }} />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-[#111111]/60 to-transparent opacity-90"></div>
-
-                {/* Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-5 flex flex-col justify-end h-full">
-                  
-                  {/* Title & Badge */}
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-xl font-bold text-white tracking-tight drop-shadow-md">
-                      {plan.name}
-                    </h3>
-                    <RiVerifiedBadgeFill className="text-blue-500 text-lg drop-shadow-sm" />
+                    <h3 className="text-xl font-bold text-white tracking-tight">{plan.name}</h3>
+                    <RiVerifiedBadgeFill className="text-blue-500 text-lg" />
                   </div>
-
-                  {/* Description */}
-                  <p className="text-[#a1a1aa] text-xs leading-relaxed mb-5 line-clamp-2">
-                    {plan.desc}
-                  </p>
-
-                  {/* Stats Grid */}
-                  <div className="flex items-center justify-between mb-5 px-1">
+                  <p className="text-[#a1a1aa] text-xs leading-relaxed mb-5 line-clamp-2">{plan.desc}</p>
+                  <div className="flex items-center justify-between mb-5 px-1 text-white">
                     <div className="flex flex-col items-center">
-                      <span className="text-white font-bold text-sm">{plan.stat1Value}</span>
-                      <span className="text-[#71717a] text-[10px] mt-0.5">{plan.stat1Label}</span>
+                      <span className="font-bold text-sm">{plan.stat1Value}</span>
+                      <span className="text-[#71717a] text-[10px]">{plan.stat1Label}</span>
                     </div>
-                    
                     <div className="w-[1px] h-6 bg-white/10"></div>
-                    
                     <div className="flex flex-col items-center">
-                      <span className="text-white font-bold text-sm">{plan.stat2Value}</span>
-                      <span className="text-[#71717a] text-[10px] mt-0.5">{plan.stat2Label}</span>
+                      <span className="font-bold text-sm">{plan.stat2Value}</span>
+                      <span className="text-[#71717a] text-[10px]">{plan.stat2Label}</span>
                     </div>
-                    
                     <div className="w-[1px] h-6 bg-white/10"></div>
-                    
                     <div className="flex flex-col items-center">
-                      <span className="text-white font-bold text-sm">{plan.stat3Value}</span>
-                      <span className="text-[#71717a] text-[10px] mt-0.5">{plan.stat3Label}</span>
+                      <span className="font-bold text-sm">{plan.stat3Value}</span>
+                      <span className="text-[#71717a] text-[10px]">{plan.stat3Label}</span>
                     </div>
                   </div>
-
-                  {/* Buttons Row */}
                   <div className="flex items-center gap-3 mt-1">
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => navigate('/activate')}
-                      className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black py-3 rounded-2xl flex items-center justify-center gap-2 font-bold text-sm shadow-lg shadow-yellow-500/30 transition-transform"
-                    >
-                      <RiFlashlightFill size={18} className="text-black" /> Kích hoạt
-                    </motion.button>
-                    
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="w-[46px] h-[46px] shrink-0 bg-white/10 hover:bg-white/20 text-white rounded-2xl flex items-center justify-center backdrop-blur-md transition-colors border border-white/10"
-                    >
-                      <RiBookmarkLine size={20} />
+                    <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => handleBuyPlan(plan)}
+                      className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black py-3 rounded-2xl flex items-center justify-center gap-2 font-bold text-sm shadow-lg shadow-yellow-500/30">
+                      <RiFlashlightFill size={18} /> Mua ngay
                     </motion.button>
                   </div>
-
                 </div>
               </div>
             </motion.div>
           </SwiperSlide>
         ))}
       </Swiper>
+
+      <PaymentModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        plan={selectedPlan}
+        darkMode={darkMode}
+        user={user}
+      />
     </div>
   )
 }

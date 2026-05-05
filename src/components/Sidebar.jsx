@@ -2,8 +2,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   RiHome5Fill, RiFlashlightFill, RiUser3Fill,
   RiHistoryFill, RiPriceTag3Fill, RiCustomerService2Fill,
-  RiCloseLine
+  RiCloseLine, RiLogoutBoxLine
 } from 'react-icons/ri'
+import { useNavigate } from 'react-router-dom'
 
 const menuItems = [
   { id: 'home',     icon: RiHome5Fill,           label: 'Trang chủ' },
@@ -14,9 +15,7 @@ const menuItems = [
   { id: 'support',  icon: RiCustomerService2Fill, label: 'Hỗ trợ' },
 ]
 
-import { useNavigate } from 'react-router-dom'
-
-export default function Sidebar({ activeMenu, sidebarOpen, setSidebarOpen, darkMode }) {
+export default function Sidebar({ activeMenu, sidebarOpen, setSidebarOpen, darkMode, user, onLogout }) {
   const navigate = useNavigate()
 
   const handleClick = (id) => {
@@ -26,12 +25,10 @@ export default function Sidebar({ activeMenu, sidebarOpen, setSidebarOpen, darkM
 
   return (
     <>
-      {/* Desktop */}
       <aside className="hidden lg:flex flex-col w-56 shrink-0 p-3 gap-1">
-        <SidebarContent activeMenu={activeMenu} onSelect={handleClick} darkMode={darkMode} />
+        <SidebarContent activeMenu={activeMenu} onSelect={handleClick} darkMode={darkMode} user={user} onLogout={onLogout} />
       </aside>
 
-      {/* Mobile drawer */}
       <AnimatePresence>
         {sidebarOpen && (
           <motion.aside
@@ -48,7 +45,7 @@ export default function Sidebar({ activeMenu, sidebarOpen, setSidebarOpen, darkM
             >
               <RiCloseLine size={20} />
             </button>
-            <SidebarContent activeMenu={activeMenu} onSelect={handleClick} darkMode={darkMode} />
+            <SidebarContent activeMenu={activeMenu} onSelect={handleClick} darkMode={darkMode} user={user} onLogout={onLogout} />
           </motion.aside>
         )}
       </AnimatePresence>
@@ -56,7 +53,13 @@ export default function Sidebar({ activeMenu, sidebarOpen, setSidebarOpen, darkM
   )
 }
 
-function SidebarContent({ activeMenu, onSelect, darkMode }) {
+function SidebarContent({ activeMenu, onSelect, darkMode, user, onLogout }) {
+  const handleLogout = () => {
+    if (window.confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+      onLogout()
+    }
+  }
+
   return (
     <>
       {/* Logo */}
@@ -65,7 +68,6 @@ function SidebarContent({ activeMenu, onSelect, darkMode }) {
         animate={{ opacity: 1, y: 0 }}
         className="flex items-center gap-2.5 px-2 pt-3 pb-5"
       >
-        {/* Logo icon */}
         <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-yellow-300 to-amber-500 flex items-center justify-center shadow-md">
           <span className="text-lg">🔒</span>
         </div>
@@ -99,21 +101,37 @@ function SidebarContent({ activeMenu, onSelect, darkMode }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.45 }}
-        className="mt-3 p-3 rounded-2xl flex items-center gap-3"
+        className="mt-3 p-3 rounded-2xl flex items-center justify-between gap-3 group"
         style={{ background: darkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }}
       >
-        <div className="relative shrink-0">
-          <img
-            src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80&h=80&fit=crop&crop=face"
-            alt="Admin"
-            className="w-10 h-10 rounded-xl object-cover"
-          />
-          <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 border-2 border-white dark:border-[#252545] rounded-full"></span>
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="relative shrink-0">
+            <img
+              src={user ? `https://ui-avatars.com/api/?name=${user.username}&background=F0E000&color=000` : "https://i.pravatar.cc/150?u=locketgold"}
+              alt="User"
+              className="w-10 h-10 rounded-xl object-cover"
+            />
+            <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 border-2 border-white dark:border-[#252545] rounded-full ${user ? 'bg-green-400' : 'bg-gray-400'}`}></span>
+          </div>
+          <div className="min-w-0">
+            <p className="font-bold text-sm text-gray-900 dark:text-white truncate">
+              {user ? user.username : 'Khách'}
+            </p>
+            <p className="text-[10px] text-gray-400 dark:text-slate-500 truncate">
+              {user ? user.email : 'Chưa đăng nhập'}
+            </p>
+          </div>
         </div>
-        <div className="min-w-0">
-          <p className="font-bold text-sm text-gray-900 dark:text-white truncate">Admin LG</p>
-          <p className="text-xs text-gray-400 dark:text-slate-500 truncate">Super Admin</p>
-        </div>
+        
+        {user && (
+          <button 
+            onClick={handleLogout}
+            className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-500/10 transition-all opacity-0 group-hover:opacity-100"
+            title="Đăng xuất"
+          >
+            <RiLogoutBoxLine size={18} />
+          </button>
+        )}
       </motion.div>
     </>
   )

@@ -1,141 +1,86 @@
-import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { RiFireFill, RiTimeLine, RiVipCrownFill, RiHeart3Fill, RiHeart3Line, RiLayoutGridFill, RiListUnordered } from 'react-icons/ri'
 import PricingCards from './PricingCards'
+import { RiShieldCheckFill, RiFlashlightFill, RiCustomerService2Fill } from 'react-icons/ri'
 
-const additionalPackages = [
-  {
-    id: 1, title: 'Artwork of Graphic Design', author: 'Eriacryth',
-    desc: 'From whimsical fairy-like beings to mythical creatures, create unique cute spirit characters.',
-    img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=600&fit=crop',
-    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=48&h=48&fit=crop&crop=face',
-    liked: true
-  },
-  {
-    id: 2, title: 'Dead Skull Wearing', author: 'UkraineArt',
-    desc: 'A detailed illustration a Dead Skull wearing trendy sunglasses, t-shirt design, flowers splash...',
-    img: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&h=600&fit=crop',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=48&h=48&fit=crop&crop=face',
-    liked: false
-  },
-  {
-    id: 3, title: '3d Splash art', author: 'UkraineArt',
-    desc: '3d Splash art, a cat head, ((white background)), roaring, epic instagram, artstation...',
-    img: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=400&h=600&fit=crop',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=48&h=48&fit=crop&crop=face',
-    liked: true
-  },
-  {
-    id: 4, title: 'Splash art', author: 'CloneX',
-    desc: 'Splash art, a raven head, ((white background)), roaring, epic instagram, artstation, splash style of...',
-    img: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=400&h=600&fit=crop',
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=48&h=48&fit=crop&crop=face',
-    liked: false
-  }
-]
+export default function PricingPage({ darkMode, user }) {
+  const textMain = darkMode ? '#FFFFFF' : '#111111'
+  const textSub = darkMode ? '#A1A1AA' : '#71717A'
 
-export default function PricingPage({ darkMode, setActiveMenu }) {
-  const [activeTab, setActiveTab] = useState('trending')
-  const bgMain = darkMode ? '#18182F' : '#F2F2F7'
-  const textMain = darkMode ? '#ffffff' : '#111827'
-  const textSub = darkMode ? '#8b92a5' : '#6b7280'
+  const features = [
+    { icon: RiShieldCheckFill, title: 'Bảo hành 1:1', desc: 'Lỗi là đổi mới ngay lập tức trong suốt thời gian sử dụng.', color: 'text-green-500' },
+    { icon: RiFlashlightFill, title: 'Kích hoạt nhanh', desc: 'Hệ thống tự động kích hoạt chỉ trong 30 giây sau khi thanh toán.', color: 'text-yellow-500' },
+    { icon: RiCustomerService2Fill, title: 'Hỗ trợ 24/7', desc: 'Đội ngũ kỹ thuật luôn sẵn sàng giải đáp mọi thắc mắc của bạn.', color: 'text-blue-500' },
+  ]
 
   return (
-    <div className="flex flex-col gap-8 pb-10">
-      
-      {/* 1. Featured Horizontal Cards (The PricingCards we built) */}
-      <PricingCards darkMode={darkMode} />
-
-      {/* 2. Filter / Tabs Section */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        
-        {/* Left Tabs */}
-        <div className="flex items-center gap-2 p-1.5 rounded-2xl" style={{ background: darkMode ? '#252545' : '#ffffff', boxShadow: darkMode ? 'none' : '0 2px 10px rgba(0,0,0,0.02)' }}>
-          <button 
-            onClick={() => setActiveTab('trending')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'trending' ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-md' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
-          >
-            <RiFireFill size={16} /> Trending
-          </button>
-          <button 
-            onClick={() => setActiveTab('new')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'new' ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-md' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
-          >
-            <RiTimeLine size={16} /> New
-          </button>
-          <button 
-            onClick={() => setActiveTab('top')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'top' ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-md' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
-          >
-            <RiVipCrownFill size={16} /> Top
-          </button>
-        </div>
-
-        {/* Right Controls */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: darkMode ? '#252545' : '#ffffff' }}>
-            <button className="p-1.5 rounded-lg bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-white">
-              <RiLayoutGridFill size={16} />
-            </button>
-            <button className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800">
-              <RiListUnordered size={16} />
-            </button>
-          </div>
-          <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: darkMode ? '#252545' : '#ffffff' }}>
-            <span className="text-gray-400">-</span>
-            <div className="w-16 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full relative">
-              <div className="absolute top-0 left-0 w-1/2 h-full bg-purple-500 rounded-full"></div>
-              <div className="absolute top-1/2 left-1/2 -translate-y-1/2 w-3 h-3 bg-white border-2 border-purple-500 rounded-full shadow-sm"></div>
-            </div>
-            <span className="text-gray-400">+</span>
-          </div>
-        </div>
-
+    <div className="max-w-6xl mx-auto space-y-10 pb-20">
+      {/* Header Section */}
+      <div className="text-center space-y-4 pt-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="inline-block px-4 py-1.5 rounded-full bg-yellow-400/10 text-yellow-500 text-xs font-black uppercase tracking-widest border border-yellow-400/20"
+        >
+          💎 Gói cước Premium
+        </motion.div>
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-4xl sm:text-5xl font-black tracking-tight"
+          style={{ color: textMain }}
+        >
+          Nâng cấp trải nghiệm <span className="text-yellow-500">Locket</span>
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="text-base sm:text-lg max-w-2xl mx-auto font-medium"
+          style={{ color: textSub }}
+        >
+          Chọn gói cước phù hợp để tận hưởng trọn bộ tính năng Gold: Up ảnh không giới hạn, không quảng cáo và huy hiệu xác minh.
+        </motion.p>
       </div>
 
-      {/* 3. Vertical Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-        {additionalPackages.map((pkg, i) => (
+      {/* Pricing Cards - Đã thêm truyền prop user */}
+      <div className="px-2 sm:px-4">
+        <PricingCards darkMode={darkMode} user={user} />
+      </div>
+
+      {/* Trust Badges */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-4">
+        {features.map((f, i) => (
           <motion.div
-            key={pkg.id}
+            key={i}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className="group relative rounded-3xl overflow-hidden aspect-[3/4] cursor-pointer shadow-sm hover:shadow-xl transition-shadow"
+            transition={{ delay: 0.4 + (i * 0.1) }}
+            className="p-6 rounded-[2rem] border transition-all hover:scale-[1.02]"
+            style={{ 
+              background: darkMode ? 'rgba(255,255,255,0.03)' : '#ffffff',
+              borderColor: darkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'
+            }}
           >
-            {/* Background Image */}
-            <img 
-              src={pkg.img} 
-              alt={pkg.title} 
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-            
-            {/* Top Left User Badge */}
-            <div className="absolute top-4 left-4 flex items-center gap-2 px-2 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/20 shadow-sm">
-              <img src={pkg.avatar} alt={pkg.author} className="w-6 h-6 rounded-full border border-white/50 object-cover" />
-              <span className="text-white text-xs font-bold pr-1 drop-shadow-md">{pkg.author}</span>
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${darkMode ? 'bg-white/5' : 'bg-gray-50'}`}>
+              <f.icon size={24} className={f.color} />
             </div>
-
-            {/* Top Right Heart */}
-            <button className={`absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md border border-white/20 transition-colors ${pkg.liked ? 'bg-purple-500/80 text-white' : 'bg-white/20 text-white hover:bg-white/40'}`}>
-              {pkg.liked ? <RiHeart3Fill size={16} /> : <RiHeart3Line size={16} />}
-            </button>
-
-            {/* Bottom Content Overlay */}
-            <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/90 via-black/50 to-transparent pointer-events-none" />
-            
-            <div className="absolute bottom-0 left-0 right-0 p-5">
-              <h3 className="text-white font-bold text-base mb-1 drop-shadow-md leading-tight group-hover:text-purple-300 transition-colors">
-                {pkg.title}
-              </h3>
-              <p className="text-gray-300 text-xs line-clamp-2 leading-relaxed drop-shadow-sm">
-                {pkg.desc}
-              </p>
-            </div>
+            <h3 className="text-lg font-bold mb-2" style={{ color: textMain }}>{f.title}</h3>
+            <p className="text-sm leading-relaxed" style={{ color: textSub }}>{f.desc}</p>
           </motion.div>
         ))}
       </div>
-
+      
+      {/* FAQ Link or Support */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8 }}
+        className="text-center pt-10"
+      >
+        <p className="text-sm font-medium" style={{ color: textSub }}>
+          Bạn cần hỗ trợ riêng? <a href="/support" className="text-yellow-500 font-bold hover:underline">Liên hệ tư vấn viên ngay</a>
+        </p>
+      </motion.div>
     </div>
   )
 }

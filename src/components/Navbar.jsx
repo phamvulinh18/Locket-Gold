@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { RiMenu2Line, RiSunFill, RiMoonFill, RiSearch2Line, RiBellFill } from 'react-icons/ri'
 
-export default function Navbar({ darkMode, setDarkMode, setSidebarOpen }) {
+export default function Navbar({ darkMode, setDarkMode, setSidebarOpen, user }) {
   return (
     <motion.header
       initial={{ opacity: 0, y: -16 }}
@@ -37,7 +37,6 @@ export default function Navbar({ darkMode, setDarkMode, setSidebarOpen }) {
 
       {/* Right */}
       <div className="flex items-center gap-2">
-        {/* Notification */}
         <button
           className="relative p-2.5 rounded-xl transition-colors"
           style={{ background: darkMode ? 'rgba(255,255,255,0.07)' : '#ffffff' }}
@@ -49,7 +48,6 @@ export default function Navbar({ darkMode, setDarkMode, setSidebarOpen }) {
           />
         </button>
 
-        {/* Dark Mode Toggle */}
         <motion.button
           onClick={() => setDarkMode(!darkMode)}
           whileTap={{ scale: 0.88 }}
@@ -67,14 +65,14 @@ export default function Navbar({ darkMode, setDarkMode, setSidebarOpen }) {
           style={{ borderColor: darkMode ? 'rgba(255,255,255,0.1)' : '#e5e7eb' }}
         >
           <img
-            src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80&h=80&fit=crop&crop=face"
-            alt="Admin"
+            src={user ? `https://ui-avatars.com/api/?name=${user.full_name}&background=F0E000&color=000` : "https://i.pravatar.cc/150?u=locketgold"}
+            alt="User"
             className="w-8 h-8 rounded-lg object-cover"
           />
           <div className="hidden md:block">
             <p className="text-sm font-bold leading-none"
-              style={{ color: darkMode ? '#fff' : '#111827' }}>Admin LG</p>
-            <p className="text-xs text-yellow-500 font-semibold">Super Admin</p>
+              style={{ color: darkMode ? '#fff' : '#111827' }}>{user ? user.full_name : 'Guest'}</p>
+            <p className="text-[10px] text-yellow-500 font-semibold">{user ? '@' + user.username : 'Chưa đăng nhập'}</p>
           </div>
         </div>
       </div>
