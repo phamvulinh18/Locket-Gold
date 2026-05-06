@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import PricingCards from './PricingCards'
 import { RiShieldCheckFill, RiFlashlightFill, RiCustomerService2Fill } from 'react-icons/ri'
 
-export default function PricingPage({ darkMode, user }) {
+export default function PricingPage({ darkMode, user, refreshUser }) {
   const textMain = darkMode ? '#FFFFFF' : '#111111'
   const textSub = darkMode ? '#A1A1AA' : '#71717A'
 
@@ -44,7 +44,7 @@ export default function PricingPage({ darkMode, user }) {
 
       {/* Pricing Cards - Đã thêm truyền prop user */}
       <div className="px-2 sm:px-4">
-        <PricingCards darkMode={darkMode} user={user} />
+        <PricingCards darkMode={darkMode} user={user} refreshUser={refreshUser} />
       </div>
 
       {/* Trust Badges */}

@@ -1,13 +1,14 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { RiCloseLine, RiFileCopyLine, RiCheckLine, RiTimeLine, RiInformationLine, RiCheckboxCircleFill, RiLoader4Line } from 'react-icons/ri'
 import { useState, useEffect } from 'react'
+import { toast } from './Toast'
 
-export default function PaymentModal({ isOpen, onClose, plan, darkMode, user }) {
+export default function PaymentModal({ isOpen, onClose, plan, darkMode, user, refreshUser }) {
   const [copied, setCopied] = useState(false)
   const [timeLeft, setTimeLeft] = useState(600)
   const [orderStatus, setOrderStatus] = useState('pending')
 
-  // Port đã đổi thành 8088 theo XAMPP của bạn
+  // Port 8088 theo XAMPP của bạn
   const API_BASE_URL = "http://localhost:8088/locketgold"
   const BANK_ID = "MB"
   const ACCOUNT_NO = "126135"
@@ -19,27 +20,9 @@ export default function PaymentModal({ isOpen, onClose, plan, darkMode, user }) 
 
   useEffect(() => {
     if (!isOpen || !plan || !user) return
-
-    const createOrder = async () => {
-      try {
-        const priceNumeric = parseInt(plan.stat3Value.replace('k', '')) * 1000
-        await fetch(`${API_BASE_URL}/create_order.php`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            username: username,
-            planId: plan.id,
-            amount: priceNumeric,
-            transferContent: TRANSFER_CONTENT
-          })
-        })
-        setOrderStatus('pending')
-      } catch (err) {
-        console.error('Lỗi tạo đơn MySQL:', err)
-      }
-    }
-
-    createOrder()
+    
+    // Đã loại bỏ createOrder để không lưu đơn "rác" vào DB khi người dùng chỉ mới xem QR
+    setOrderStatus('pending')
     setTimeLeft(600)
   }, [isOpen])
 
@@ -48,10 +31,12 @@ export default function PaymentModal({ isOpen, onClose, plan, darkMode, user }) 
 
     const interval = setInterval(async () => {
       try {
+        // Vẫn polling check_status.php để đợi Webhook tự động tạo đơn khi có tiền
         const res = await fetch(`${API_BASE_URL}/check_status.php?content=${encodeURIComponent(TRANSFER_CONTENT)}`)
         const data = await res.json()
         if (data.status === 'completed') {
           setOrderStatus('completed')
+          toast(`Thanh toán thành công gói ${plan.name}! 🎉`)
           clearInterval(interval)
         }
       } catch (err) { }
@@ -82,8 +67,29 @@ export default function PaymentModal({ isOpen, onClose, plan, darkMode, user }) 
 
   if (!plan) return null
 
-  const priceNumeric = plan.stat3Value.replace('k', '000')
+  const priceNumeric = plan.stat3Value ? plan.stat3Value.replace('k', '000') : '0'
   const qrUrl = `https://img.vietqr.io/image/${BANK_ID}-${ACCOUNT_NO}-compact2.jpg?amount=${priceNumeric}&addInfo=${encodeURIComponent(TRANSFER_CONTENT)}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`
+
+  const handleManualCheck = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/check_status.php?content=${encodeURIComponent(TRANSFER_CONTENT)}`)
+      const data = await res.json()
+      if (data.status === 'completed') {
+        setOrderStatus('completed')
+        toast(`Thanh toán thành công gói ${plan.name}! 🎉`)
+        if (refreshUser) refreshUser()
+      } else {
+        toast("Hệ thống chưa nhận được thanh toán. Vui lòng đợi trong giây lát!", "info")
+      }
+    } catch (err) {
+      toast("Lỗi khi kiểm tra trạng thái!", "error")
+    }
+  }
+
+  const handleCloseSuccess = () => {
+    if (refreshUser) refreshUser()
+    onClose()
+  }
 
   return (
     <AnimatePresence>
@@ -99,7 +105,7 @@ export default function PaymentModal({ isOpen, onClose, plan, darkMode, user }) 
                   </motion.div>
                   <h2 className="text-2xl font-black mb-2" style={{ color: darkMode ? '#fff' : '#111' }}>Thanh toán thành công! 🎉</h2>
                   <p className="text-sm mb-8" style={{ color: darkMode ? '#A1A1AA' : '#71717A' }}>Gói <strong>{plan.name}</strong> đã kích hoạt.</p>
-                  <button onClick={onClose} className="px-8 py-3 rounded-2xl font-bold text-sm text-black shadow-lg" style={{ background: '#F0E000' }}>Tuyệt vời!</button>
+                  <button onClick={handleCloseSuccess} className="px-8 py-3 rounded-2xl font-bold text-sm text-black shadow-lg" style={{ background: '#F0E000' }}>Tuyệt vời!</button>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -135,9 +141,11 @@ export default function PaymentModal({ isOpen, onClose, plan, darkMode, user }) 
                 </div>
               </div>
             </div>
-            <div className="p-4 bg-gray-50 dark:bg-black/20 flex gap-3">
-              <button onClick={onClose} className="flex-1 py-3 rounded-2xl text-xs font-bold" style={{ color: darkMode ? '#A1A1AA' : '#71717A', background: darkMode ? 'rgba(255,255,255,0.05)' : '#fff' }}>Hủy</button>
-              <button onClick={() => handleCopy(TRANSFER_CONTENT)} className="flex-[2] bg-blue-600 text-white py-3 rounded-2xl font-bold text-xs shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2"><RiFileCopyLine size={16} /> Copy nội dung</button>
+            <div className="p-4 bg-gray-50 dark:bg-black/20 flex flex-col sm:flex-row gap-3">
+              <button onClick={handleManualCheck} className="flex-1 bg-green-600 text-white py-3 rounded-2xl font-bold text-xs shadow-lg shadow-green-600/20 flex items-center justify-center gap-2 transition-all hover:bg-green-700">
+                <RiCheckLine size={16} /> Tôi đã thanh toán
+              </button>
+              <button onClick={() => handleCopy(TRANSFER_CONTENT)} className="flex-1 bg-blue-600 text-white py-3 rounded-2xl font-bold text-xs shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2"><RiFileCopyLine size={16} /> Copy nội dung</button>
             </div>
           </motion.div>
         </div>

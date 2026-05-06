@@ -1,36 +1,50 @@
 <?php
+header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
 require_once 'db.php';
 
-$SEPAY_API_KEY = "LOCKETGOLD_SECRET_2024";
+$data = json_decode(file_get_contents("php://input"), true);
+file_put_contents("webhook_log.txt", print_r($data, true), FILE_APPEND);
 
-// Lấy dữ liệu từ SePay
-$data = json_decode(file_get_contents('php://input'), true);
-$headers = getallheaders();
-$authHeader = $headers['Authorization'] ?? '';
-
-if ($authHeader !== "Apikey $SEPAY_API_KEY") {
-    die(json_encode(["error" => "Unauthorized"]));
+if (!$data || !isset($data['content'])) {
+    die(json_encode(["status" => "error", "message" => "Thiếu nội dung"]));
 }
 
-if ($data && $data['transferType'] === 'in') {
-    // Nội dung thực tế: "VIP1 vulinh FT26125393664896..."
-    $content = $data['content']; 
-    $amount = $data['transferAmount'];
+$content = $data['content']; // VD: "basic duykgin"
+$amount = $data['amount'];
+$parts = explode(' ', trim($content));
 
-    // LOG để kiểm tra (Bạn có thể xem file webhook_log.txt để debug)
-    file_put_contents("webhook_log.txt", date("Y-m-d H:i:s") . " - Recv: $content - Amt: $amount\n", FILE_APPEND);
+if (count($parts) < 2) {
+    die(json_encode(["status" => "error", "message" => "Nội dung chuyển khoản không hợp lệ"]));
+}
 
-    // SQL: Tìm đơn hàng mà transfer_content nằm TRONG nội dung ngân hàng gửi về
-    // Ví dụ: "VIP1 vulinh" nằm trong "VIP1 vulinh FT26125..."
-    $stmt = $conn->prepare("UPDATE orders SET status = 'completed' WHERE ? LIKE CONCAT('%', transfer_content, '%') AND status = 'pending'");
-    $stmt->bind_param("s", $content);
-    $stmt->execute();
+$plan_id = strtolower($parts[0]);
+$username = $parts[1];
 
-    if ($stmt->affected_rows > 0) {
-        echo json_encode(["success" => true, "message" => "Khớp đơn hàng thành công"]);
-    } else {
-        echo json_encode(["success" => false, "message" => "Không tìm thấy đơn hàng khớp với nội dung"]);
+try {
+    // 1. Tìm ID của user dựa trên username (Nối bảng)
+    $userStmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
+    $userStmt->bind_param("s", $username);
+    $userStmt->execute();
+    $user = $userStmt->get_result()->fetch_assoc();
+
+    if (!$user) {
+        die(json_encode(["status" => "error", "message" => "Không tìm thấy người dùng"]));
     }
+
+    $user_id = $user['id'];
+
+    // 2. Tạo đơn hàng với user_id chính xác
+    $stmt = $conn->prepare("INSERT INTO orders (user_id, username, plan_id, amount, status, transfer_content) VALUES (?, ?, ?, ?, 'completed', ?)");
+    $stmt->bind_param("issis", $user_id, $username, $plan_id, $amount, $content);
+    
+    if ($stmt->execute()) {
+        echo json_encode(["status" => "success", "message" => "Đã tạo đơn hàng cho user ID: $user_id"]);
+    } else {
+        echo json_encode(["status" => "error", "message" => "Lỗi tạo đơn hàng"]);
+    }
+} catch (Exception $e) {
+    echo json_encode(["status" => "error", "message" => $e->getMessage()]);
 }
+
 $conn->close();
